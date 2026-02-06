@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useKanban } from "../hooks/useKanban";
 
 const months = [
@@ -34,10 +34,8 @@ const AnalyticsPage = () => {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   const wonColumn = columns.find((col) => col.title.toLowerCase().includes("gagne"));
-  const lostColumn = columns.find((col) => col.title.toLowerCase().includes("perdu"));
 
   const wonDeals = deals.filter((deal) => deal.columnId === wonColumn?.id);
-  const lostDeals = deals.filter((deal) => deal.columnId === lostColumn?.id);
 
   const total = deals.length;
   const winRate = total > 0 ? Math.round((wonDeals.length / total) * 100) : 0;
@@ -229,9 +227,9 @@ const AnalyticsPage = () => {
                 <div className="font-semibold text-slate-800 dark:text-slate-100">
                   {months[hoverIndex]}
                 </div>
-                <div>Reel: {formatAmount(actualByMonth[hoverIndex])}</div>
-                <div>Prevision: {formatAmount(forecastByMonth[hoverIndex])}</div>
-                <div>Objectif: {formatAmount(targetByMonth[hoverIndex])}</div>
+                <div>Reel: {formatAmount(actualByMonth[hoverIndex] ?? 0)}</div>
+                <div>Prevision: {formatAmount(forecastByMonth[hoverIndex] ?? 0)}</div>
+                <div>Objectif: {formatAmount(targetByMonth[hoverIndex] ?? 0)}</div>
               </div>
             ) : null}
           </div>

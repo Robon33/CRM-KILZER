@@ -90,8 +90,8 @@ const SettingsPage = () => {
             saveSettings({
               displayName: name.trim(),
               avatarEmoji: emoji,
-              avatarUrl: avatarUrl.trim() || null,
-              email: email.trim() || null,
+              avatarUrl: avatarUrl.trim() || undefined,
+              email: email.trim() || undefined,
             })
           }
           className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900"
