@@ -348,6 +348,8 @@ export const fetchSettings = async (): Promise<Settings | null> => {
     notificationsEnabled: data.notifications_enabled ?? undefined,
     displayName: data.display_name ?? undefined,
     avatarEmoji: data.avatar_emoji ?? undefined,
+    avatarUrl: data.avatar_url ?? undefined,
+    email: data.email ?? undefined,
   };
 };
 
@@ -363,6 +365,8 @@ export const upsertSettings = async (payload: Partial<Settings>) => {
         notifications_enabled: payload.notificationsEnabled ?? null,
         display_name: payload.displayName ?? null,
         avatar_emoji: payload.avatarEmoji ?? null,
+        avatar_url: payload.avatarUrl ?? null,
+        email: payload.email ?? null,
       },
       { onConflict: "id" }
     )
@@ -378,5 +382,7 @@ export const upsertSettings = async (payload: Partial<Settings>) => {
     notificationsEnabled: data.notifications_enabled ?? undefined,
     displayName: data.display_name ?? undefined,
     avatarEmoji: data.avatar_emoji ?? undefined,
+    avatarUrl: data.avatar_url ?? undefined,
+    email: data.email ?? undefined,
   } as Settings;
 };

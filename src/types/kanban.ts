@@ -58,4 +58,6 @@ export interface Settings {
   notificationsEnabled?: boolean;
   displayName?: string;
   avatarEmoji?: string;
+  avatarUrl?: string;
+  email?: string;
 }

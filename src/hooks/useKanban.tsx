@@ -466,6 +466,8 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
       notificationsEnabled: next.notificationsEnabled ?? prev?.notificationsEnabled,
       displayName: next.displayName ?? prev?.displayName,
       avatarEmoji: next.avatarEmoji ?? prev?.avatarEmoji,
+      avatarUrl: next.avatarUrl ?? prev?.avatarUrl,
+      email: next.email ?? prev?.email,
     };
     setSettings(optimistic);
 

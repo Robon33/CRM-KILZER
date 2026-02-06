@@ -17,6 +17,7 @@ const SidebarMenu = ({ isOpen, onToggle }: SidebarMenuProps) => {
   const { settings } = useKanban();
   const displayName = settings?.displayName ?? "Kilian";
   const avatarEmoji = settings?.avatarEmoji ?? "🧑🏻‍💻";
+  const avatarUrl = settings?.avatarUrl ?? "";
 
   return (
     <aside
@@ -89,8 +90,12 @@ const SidebarMenu = ({ isOpen, onToggle }: SidebarMenuProps) => {
             Slots prets pour nouvelles features
           </div>
           <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white/70 p-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-xl dark:border-slate-700 dark:bg-slate-800">
-              {avatarEmoji}
+            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 text-xl dark:border-slate-700 dark:bg-slate-800">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+              ) : (
+                avatarEmoji
+              )}
             </div>
             <div>
               <div className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
