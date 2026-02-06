@@ -48,10 +48,11 @@ const DealFormModal = ({
       return;
     }
     if (field === "reminderAt") {
+      const datePart = value.split("T")[0] ?? "";
       setForm((prev) => ({
         ...prev,
         reminderAt: value.length > 0 ? value : null,
-        nextFollowUpDate: value.length > 0 ? value.split("T")[0] : null,
+        nextFollowUpDate: value.length > 0 && datePart ? datePart : null,
       }));
       return;
     }

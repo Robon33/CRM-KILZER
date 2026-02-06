@@ -127,7 +127,9 @@ const KanbanBoard = ({
     setActiveDealId(null);
   };
 
-  const activeDeal = activeDealId ? dealById.get(activeDealId) : null;
+  const activeDeal: Deal | null = activeDealId
+    ? dealById.get(activeDealId) ?? null
+    : null;
 
   return (
     <DndContext

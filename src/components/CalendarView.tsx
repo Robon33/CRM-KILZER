@@ -50,7 +50,8 @@ const CalendarView = ({ deals, reminders, onMoveReminder }: CalendarViewProps) =
   const reminderMap = useMemo(() => {
     const map = new Map<string, Reminder[]>();
     reminders.forEach((rem) => {
-      const dateKey = rem.remindAt.split("T")[0];
+      const [dateKey] = rem.remindAt.split("T");
+      if (!dateKey) return;
       const list = map.get(dateKey) ?? [];
       list.push(rem);
       map.set(dateKey, list);
@@ -71,6 +72,8 @@ const CalendarView = ({ deals, reminders, onMoveReminder }: CalendarViewProps) =
   const goNext = () => {
     setCursorDate(new Date(cursorDate.getFullYear(), cursorDate.getMonth() + 1, 1));
   };
+
+  const timeLabel = reminder.remindAt.split("T")[1] ?? "";
 
   return (
     <section className="space-y-4">
@@ -175,7 +178,7 @@ const CalendarDayCell = ({ id, label, reminders, dealById, muted }: CalendarDayC
 };
 
 const CalendarReminderChip = ({ reminder, deal }: { reminder: Reminder; deal?: Deal }) => {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useDraggable({
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: reminder.id,
   });
 
@@ -183,7 +186,6 @@ const CalendarReminderChip = ({ reminder, deal }: { reminder: Reminder; deal?: D
     transform: transform
       ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
       : undefined,
-    transition,
   };
 
   return (
@@ -197,7 +199,7 @@ const CalendarReminderChip = ({ reminder, deal }: { reminder: Reminder; deal?: D
       {...listeners}
     >
       <div className="font-semibold text-slate-700">{deal?.title ?? "Deal"}</div>
-      <div className="text-slate-500">{reminder.remindAt.split("T")[1] ?? ""}</div>
+      <div className="text-slate-500">{timeLabel}</div>
     </div>
   );
 };
