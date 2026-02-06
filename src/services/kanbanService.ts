@@ -289,11 +289,37 @@ export const upsertReminderForDeal = async (
   dealId: string,
   remindAt: string | null
 ): Promise<void> => {
-  if (!remindAt) return;
-  const { error } = await supabase
+  const { data: existing, error: fetchError } = await supabase
     .from("reminders")
-    .upsert({ deal_id: dealId, remind_at: remindAt }, { onConflict: "deal_id" });
-  if (error) throw error;
+    .select("id")
+    .eq("deal_id", dealId)
+    .maybeSingle();
+  if (fetchError) throw fetchError;
+
+  if (!remindAt) {
+    if (existing?.id) {
+      const { error: deleteError } = await supabase
+        .from("reminders")
+        .delete()
+        .eq("id", existing.id);
+      if (deleteError) throw deleteError;
+    }
+    return;
+  }
+
+  if (existing?.id) {
+    const { error: updateError } = await supabase
+      .from("reminders")
+      .update({ remind_at: remindAt })
+      .eq("id", existing.id);
+    if (updateError) throw updateError;
+    return;
+  }
+
+  const { error: insertError } = await supabase
+    .from("reminders")
+    .insert({ deal_id: dealId, remind_at: remindAt });
+  if (insertError) throw insertError;
 };
 
 // Activity events
