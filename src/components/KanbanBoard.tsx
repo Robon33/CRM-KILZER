@@ -102,6 +102,7 @@ const KanbanBoard = ({
     if (activeDealIndex === -1) return;
 
     const activeDeal = sourceColumn.deals[activeDealIndex];
+    if (!activeDeal) return;
     const sourceDeals = sourceColumn.deals.filter((deal) => deal.id !== activeId);
 
     const targetIndex = isOverColumn

@@ -73,8 +73,6 @@ const CalendarView = ({ deals, reminders, onMoveReminder }: CalendarViewProps) =
     setCursorDate(new Date(cursorDate.getFullYear(), cursorDate.getMonth() + 1, 1));
   };
 
-  const timeLabel = reminder.remindAt.split("T")[1] ?? "";
-
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
@@ -182,6 +180,7 @@ const CalendarReminderChip = ({ reminder, deal }: { reminder: Reminder; deal?: D
     id: reminder.id,
   });
 
+  const timeLabel = reminder.remindAt.split("T")[1] ?? "";
   const style = {
     transform: transform
       ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
