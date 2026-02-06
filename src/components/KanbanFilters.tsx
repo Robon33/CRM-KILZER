@@ -38,38 +38,38 @@ const KanbanFilters = ({
   onReset,
 }: KanbanFiltersProps) => {
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4">
+    <section className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex-1 min-w-[220px]">
-          <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+          <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
             Recherche
           </label>
           <input
             value={query}
             onChange={(event) => onQueryChange(event.target.value)}
             placeholder="Titre ou client"
-            className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition focus:border-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+            className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition focus:border-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </div>
         <div className="flex-1 min-w-[220px]">
-          <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+          <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
             Tags
           </label>
           <input
             value={tagsQuery}
             onChange={(event) => onTagsQueryChange(event.target.value)}
             placeholder="ex: saas, urgent"
-            className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition focus:border-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+            className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition focus:border-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </div>
         <div className="min-w-[160px]">
-          <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+          <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
             Priorite
           </label>
           <select
             value={priority}
             onChange={(event) => onPriorityChange(event.target.value as DealPriority | "all")}
-            className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+            className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           >
             <option value="all">Toutes</option>
             <option value="low">Low</option>
@@ -78,13 +78,13 @@ const KanbanFilters = ({
           </select>
         </div>
         <div className="min-w-[200px]">
-          <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+          <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
             Relance
           </label>
           <select
             value={dateFilter}
             onChange={(event) => onDateFilterChange(event.target.value as DateFilter)}
-            className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+            className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           >
             <option value="all">Toutes</option>
             <option value="overdue">En retard</option>
@@ -94,25 +94,25 @@ const KanbanFilters = ({
           </select>
         </div>
         <div className="min-w-[150px]">
-          <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+          <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
             Min €
           </label>
           <input
             type="number"
             value={amountMin}
             onChange={(event) => onAmountMinChange(event.target.value)}
-            className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+            className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </div>
         <div className="min-w-[150px]">
-          <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+          <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
             Max €
           </label>
           <input
             type="number"
             value={amountMax}
             onChange={(event) => onAmountMaxChange(event.target.value)}
-            className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+            className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
           />
         </div>
         <div className="flex items-end gap-2">
@@ -121,8 +121,8 @@ const KanbanFilters = ({
             onClick={() => onCompactModeChange(!compactMode)}
             className={`rounded-full border px-3 py-2 text-sm font-semibold ${
               compactMode
-                ? "border-slate-900 bg-slate-900 text-white"
-                : "border-slate-200 text-slate-600"
+                ? "border-slate-900 bg-slate-900 text-white dark:border-white dark:bg-white dark:text-slate-900"
+                : "border-slate-200 text-slate-600 dark:border-slate-700 dark:text-slate-300"
             }`}
           >
             Mode compact
@@ -130,7 +130,7 @@ const KanbanFilters = ({
           <button
             type="button"
             onClick={onReset}
-            className="rounded-full border border-slate-200 px-3 py-2 text-sm text-slate-500 transition hover:border-slate-300 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+            className="rounded-full border border-slate-200 px-3 py-2 text-sm text-slate-500 transition hover:border-slate-300 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:text-white"
           >
             Reinitialiser
           </button>

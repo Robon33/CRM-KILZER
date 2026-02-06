@@ -145,7 +145,7 @@ const KanbanBoard = ({
       }}
       onDragCancel={handleDragCancel}
     >
-      <section className="rounded-3xl border border-slate-200/80 bg-gradient-to-br from-slate-50/80 via-white/80 to-slate-50/60 p-6 shadow-sm">
+      <section className="rounded-3xl border border-slate-200/80 bg-gradient-to-br from-slate-50/80 via-white/80 to-slate-50/60 p-6 shadow-sm dark:border-slate-800/80 dark:from-slate-900/60 dark:via-slate-900/40 dark:to-slate-950/60">
         <div className="flex items-start gap-4 overflow-x-auto pb-3 snap-x snap-mandatory">
           {columns
             .map((column) => {

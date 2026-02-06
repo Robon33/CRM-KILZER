@@ -92,13 +92,13 @@ const DealFormModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-6">
-      <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-xl animate-[pop-in_200ms_ease-out]">
+      <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-xl animate-[pop-in_200ms_ease-out] dark:bg-slate-900 dark:text-slate-100">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{title}</h3>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-500"
+            className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-300"
           >
             Fermer
           </button>
@@ -106,39 +106,39 @@ const DealFormModal = ({
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
-            <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+            <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
               Titre
             </label>
             <input
               value={form.title}
               onChange={(event) => handleChange("title", event.target.value)}
               required
-              className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+              className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
             />
             {error ? (
-              <p className="mt-2 text-xs text-rose-600">{error}</p>
+              <p className="mt-2 text-xs text-rose-600 dark:text-rose-300">{error}</p>
             ) : null}
           </div>
           <div>
-            <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+            <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
               Client
             </label>
             <input
               value={form.clientName}
               onChange={(event) => handleChange("clientName", event.target.value)}
               required
-              className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+              className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
             />
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+              <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
                 Priorite
               </label>
               <select
                 value={form.priority}
                 onChange={(event) => handleChange("priority", event.target.value)}
-                className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+                className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
               >
                 {priorityOptions.map((option) => (
                   <option key={option} value={option}>
@@ -148,47 +148,47 @@ const DealFormModal = ({
               </select>
             </div>
             <div>
-              <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+              <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
                 Rappel (date / heure)
               </label>
               <input
                 type="datetime-local"
                 value={form.reminderAt ?? ""}
                 onChange={(event) => handleChange("reminderAt", event.target.value)}
-                className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+                className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
               />
             </div>
             <div>
-              <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+              <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
                 Montant
               </label>
               <input
                 type="number"
                 value={form.amount ?? ""}
                 onChange={(event) => handleChange("amount", event.target.value)}
-                className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+                className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
               />
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+              <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
                 Devise
               </label>
               <input
                 value={form.currency ?? ""}
                 onChange={(event) => handleChange("currency", event.target.value)}
-                className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+                className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
               />
             </div>
             <div>
-              <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+              <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
                 Tags (séparés par des virgules)
               </label>
               <input
                 value={(form.tags ?? []).join(", ")}
                 onChange={(event) => handleChange("tags", event.target.value)}
-                className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+                className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
               />
             </div>
           </div>
@@ -208,13 +208,13 @@ const DealFormModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full border border-slate-200 px-4 py-2 text-sm text-slate-500 transition hover:border-slate-300 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+              className="rounded-full border border-slate-200 px-4 py-2 text-sm text-slate-500 transition hover:border-slate-300 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:text-white"
             >
               Annuler
             </button>
             <button
               type="submit"
-              className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+              className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
             >
               Enregistrer
             </button>

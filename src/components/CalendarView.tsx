@@ -77,8 +77,8 @@ const CalendarView = ({ deals, reminders, onMoveReminder }: CalendarViewProps) =
     <section className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-slate-900">Calendrier</h2>
-          <p className="mt-1 text-sm text-slate-600">
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Calendrier</h2>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
             Vue mensuelle des rappels.
           </p>
         </div>
@@ -86,17 +86,17 @@ const CalendarView = ({ deals, reminders, onMoveReminder }: CalendarViewProps) =
           <button
             type="button"
             onClick={goPrev}
-            className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-600"
+            className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-600 dark:border-slate-800 dark:text-slate-300"
           >
             Precedent
           </button>
-          <div className="rounded-full bg-slate-100 px-4 py-1 text-xs font-semibold text-slate-700">
+          <div className="rounded-full bg-slate-100 px-4 py-1 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
             {cursorDate.toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}
           </div>
           <button
             type="button"
             onClick={goNext}
-            className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-600"
+            className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-600 dark:border-slate-800 dark:text-slate-300"
           >
             Suivant
           </button>
@@ -151,9 +151,9 @@ const CalendarDayCell = ({ id, label, reminders, dealById, muted }: CalendarDayC
   return (
     <div
       ref={setNodeRef}
-      className={`min-h-[140px] rounded-2xl border border-slate-200 bg-white p-3 text-xs text-slate-600 transition ${
+      className={`min-h-[140px] rounded-2xl border border-slate-200 bg-white p-3 text-xs text-slate-600 transition dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 ${
         muted ? "opacity-50" : ""
-      } ${isOver ? "border-slate-400 bg-slate-50" : ""}`}
+      } ${isOver ? "border-slate-400 bg-slate-50 dark:border-slate-600 dark:bg-slate-800" : ""}`}
     >
       <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
         {label}
@@ -191,14 +191,14 @@ const CalendarReminderChip = ({ reminder, deal }: { reminder: Reminder; deal?: D
     <div
       ref={setNodeRef}
       style={style}
-      className={`rounded-xl border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] shadow-sm transition ${
+      className={`rounded-xl border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] shadow-sm transition dark:border-slate-700 dark:bg-slate-800 ${
         isDragging ? "opacity-60" : ""
       }`}
       {...attributes}
       {...listeners}
     >
-      <div className="font-semibold text-slate-700">{deal?.title ?? "Deal"}</div>
-      <div className="text-slate-500">{timeLabel}</div>
+      <div className="font-semibold text-slate-700 dark:text-slate-200">{deal?.title ?? "Deal"}</div>
+      <div className="text-slate-500 dark:text-slate-400">{timeLabel}</div>
     </div>
   );
 };

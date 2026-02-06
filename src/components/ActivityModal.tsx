@@ -13,15 +13,15 @@ const ActivityModal = ({ isOpen, deal, events, onClose }: ActivityModalProps) =>
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-6">
-      <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-xl animate-[pop-in_200ms_ease-out]">
+      <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-xl animate-[pop-in_200ms_ease-out] dark:bg-slate-900 dark:text-slate-100">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-slate-900">
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
             Activite — {deal.title}
           </h3>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-500"
+            className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-300"
           >
             Fermer
           </button>
