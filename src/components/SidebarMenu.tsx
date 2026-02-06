@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { useKanban } from "../hooks/useKanban";
 
 interface SidebarMenuProps {
   isOpen: boolean;
@@ -13,6 +14,10 @@ const linkIdle =
   "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white";
 
 const SidebarMenu = ({ isOpen, onToggle }: SidebarMenuProps) => {
+  const { settings } = useKanban();
+  const displayName = settings?.displayName ?? "Kilian";
+  const avatarEmoji = settings?.avatarEmoji ?? "🧑🏻‍💻";
+
   return (
     <aside
       className={`fixed left-0 top-0 z-40 h-full w-64 border-r border-slate-200 bg-white/90 backdrop-blur transition-transform duration-200 md:translate-x-0 dark:border-slate-800 dark:bg-slate-900/90 ${
@@ -59,7 +64,7 @@ const SidebarMenu = ({ isOpen, onToggle }: SidebarMenuProps) => {
               `${linkBase} ${isActive ? linkActive : linkIdle}`
             }
           >
-            Futures fonctionnalites
+            Analyse
           </NavLink>
           <NavLink
             to="/customization"
@@ -79,8 +84,23 @@ const SidebarMenu = ({ isOpen, onToggle }: SidebarMenuProps) => {
           </NavLink>
         </nav>
 
-        <div className="mt-auto rounded-2xl border border-dashed border-slate-200 p-4 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
-          Slots prets pour nouvelles features
+        <div className="mt-auto space-y-3">
+          <div className="rounded-2xl border border-dashed border-slate-200 p-3 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
+            Slots prets pour nouvelles features
+          </div>
+          <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white/70 p-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-xl dark:border-slate-700 dark:bg-slate-800">
+              {avatarEmoji}
+            </div>
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.2em] text-slate-400">
+                Compte
+              </div>
+              <div className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                {displayName}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </aside>

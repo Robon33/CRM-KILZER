@@ -1,5 +1,5 @@
 import { supabase } from "../supabaseClient";
-import type { ActivityEvent, Column, Deal, Note, Reminder } from "../types/kanban";
+import type { ActivityEvent, Column, Deal, Note, Reminder, Settings } from "../types/kanban";
 
 // Columns
 export const fetchColumns = async (): Promise<Column[]> => {
@@ -327,4 +327,56 @@ export const createActivityEvent = async (event: {
     payload: event.payload ?? null,
   });
   if (error) throw error;
+};
+
+// Settings
+export const fetchSettings = async (): Promise<Settings | null> => {
+  const { data, error } = await supabase
+    .from("settings")
+    .select("*")
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+
+  return {
+    id: data.id,
+    userId: data.user_id ?? null,
+    theme: data.theme ?? undefined,
+    kanbanCompactMode: data.kanban_compact_mode ?? data.kanban_compact_m ?? undefined,
+    notificationsEnabled: data.notifications_enabled ?? undefined,
+    displayName: data.display_name ?? undefined,
+    avatarEmoji: data.avatar_emoji ?? undefined,
+  };
+};
+
+export const upsertSettings = async (payload: Partial<Settings>) => {
+  const { data, error } = await supabase
+    .from("settings")
+    .upsert(
+      {
+        id: payload.id,
+        user_id: payload.userId ?? null,
+        theme: payload.theme ?? null,
+        kanban_compact_mode: payload.kanbanCompactMode ?? null,
+        notifications_enabled: payload.notificationsEnabled ?? null,
+        display_name: payload.displayName ?? null,
+        avatar_emoji: payload.avatarEmoji ?? null,
+      },
+      { onConflict: "id" }
+    )
+    .select("*")
+    .single();
+  if (error) throw error;
+
+  return {
+    id: data.id,
+    userId: data.user_id ?? null,
+    theme: data.theme ?? undefined,
+    kanbanCompactMode: data.kanban_compact_mode ?? data.kanban_compact_m ?? undefined,
+    notificationsEnabled: data.notifications_enabled ?? undefined,
+    displayName: data.display_name ?? undefined,
+    avatarEmoji: data.avatar_emoji ?? undefined,
+  } as Settings;
 };

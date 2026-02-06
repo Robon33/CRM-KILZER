@@ -21,8 +21,10 @@ import {
   updateReminder,
   deleteReminder,
   upsertReminderForDeal,
+  fetchSettings,
+  upsertSettings,
 } from "../services/kanbanService";
-import type { ActivityEvent } from "../types/kanban";
+import type { ActivityEvent, Settings } from "../types/kanban";
 
 interface KanbanState {
   columns: Column[];
@@ -30,6 +32,7 @@ interface KanbanState {
   notes: Note[];
   reminders: Reminder[];
   activityEvents: ActivityEvent[];
+  settings: Settings | null;
   loading: boolean;
   error: string | null;
   refresh: () => Promise<void>;
@@ -46,6 +49,7 @@ interface KanbanState {
   addReminder: (dealId: string, remindAt: string) => Promise<void>;
   editReminder: (id: string, remindAt: string) => Promise<void>;
   removeReminder: (id: string) => Promise<void>;
+  saveSettings: (next: Partial<Settings>) => Promise<void>;
 }
 
 const KanbanContext = createContext<KanbanState | null>(null);
@@ -85,6 +89,7 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
   const [notes, setNotes] = useState<Note[]>(cache.notes);
   const [reminders, setReminders] = useState<Reminder[]>(cache.reminders);
   const [activityEvents, setActivityEvents] = useState<ActivityEvent[]>([]);
+  const [settings, setSettings] = useState<Settings | null>(null);
 
   const fireEvent = (event: {
     type: string;
@@ -143,6 +148,12 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
       }
       hydrate({ columns: cols, deals: ds, notes: ns, reminders: rs });
       setActivityEvents(events);
+      try {
+        const currentSettings = await fetchSettings();
+        setSettings(currentSettings);
+      } catch {
+        setSettings(null);
+      }
     } catch (err: any) {
       setError(err.message ?? "Erreur de chargement");
     } finally {
@@ -445,6 +456,28 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const saveSettings = async (next: Partial<Settings>) => {
+    const prev = settings;
+    const optimistic: Settings = {
+      id: next.id ?? prev?.id ?? `temp-${Date.now()}`,
+      userId: next.userId ?? prev?.userId ?? null,
+      theme: next.theme ?? prev?.theme,
+      kanbanCompactMode: next.kanbanCompactMode ?? prev?.kanbanCompactMode,
+      notificationsEnabled: next.notificationsEnabled ?? prev?.notificationsEnabled,
+      displayName: next.displayName ?? prev?.displayName,
+      avatarEmoji: next.avatarEmoji ?? prev?.avatarEmoji,
+    };
+    setSettings(optimistic);
+
+    try {
+      const saved = await upsertSettings(optimistic);
+      setSettings(saved);
+    } catch (err: any) {
+      setSettings(prev ?? null);
+      setError(err.message ?? "Erreur lors de la sauvegarde des parametres");
+    }
+  };
+
   const value = useMemo(
     () => ({
       columns,
@@ -452,6 +485,7 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
       notes,
       reminders,
       activityEvents,
+      settings,
       loading,
       error,
       refresh,
@@ -468,6 +502,7 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
       addReminder,
       editReminder,
       removeReminder,
+      saveSettings,
     }),
     [
       columns,
@@ -475,6 +510,7 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
       notes,
       reminders,
       activityEvents,
+      settings,
       loading,
       error,
     ]

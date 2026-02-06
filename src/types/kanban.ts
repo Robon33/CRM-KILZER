@@ -49,3 +49,13 @@ export interface ActivityEvent {
   payload?: string | null;
   createdAt?: string | null;
 }
+
+export interface Settings {
+  id: string;
+  userId?: string | null;
+  theme?: "light" | "dark";
+  kanbanCompactMode?: boolean;
+  notificationsEnabled?: boolean;
+  displayName?: string;
+  avatarEmoji?: string;
+}
