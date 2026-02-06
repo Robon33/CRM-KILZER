@@ -62,8 +62,8 @@ export const deleteColumn = async (id: string) => {
 export const fetchDeals = async (): Promise<Deal[]> => {
   const { data, error } = await supabase
     .from("deals")
-    .select("id,column_id,title,description,priority,created_at,updated_at")
-    .order("created_at", { ascending: true });
+    .select("id,column_id,title,description,priority,position,created_at,updated_at")
+    .order("position", { ascending: true });
   if (error) throw error;
 
   return (data ?? []).map((row) => ({
@@ -72,7 +72,7 @@ export const fetchDeals = async (): Promise<Deal[]> => {
     title: row.title,
     clientName: row.description ?? "Client",
     priority: row.priority === 3 ? "high" : row.priority === 2 ? "medium" : "low",
-    position: undefined,
+    position: row.position ?? undefined,
     nextFollowUpDate: null,
     reminderAt: null,
   }));
@@ -96,7 +96,7 @@ export const createDeal = async (payload: {
       description: safeClient,
       priority: payload.priority === "high" ? 3 : payload.priority === "medium" ? 2 : 1,
     })
-    .select("id,column_id,title,description,priority,created_at,updated_at")
+    .select("id,column_id,title,description,priority,position,created_at,updated_at")
     .single();
   if (error) throw error;
 
@@ -106,7 +106,7 @@ export const createDeal = async (payload: {
     title: data.title,
     clientName: data.description ?? "Client",
     priority: data.priority === 3 ? "high" : data.priority === 2 ? "medium" : "low",
-    position: undefined,
+    position: data.position ?? undefined,
     nextFollowUpDate: null,
     reminderAt: null,
   };
@@ -124,9 +124,10 @@ export const updateDeal = async (
       description: payload.clientName,
       priority:
         payload.priority === "high" ? 3 : payload.priority === "medium" ? 2 : 1,
+      position: payload.position,
     })
     .eq("id", id)
-    .select("id,column_id,title,description,priority,created_at,updated_at")
+    .select("id,column_id,title,description,priority,position,created_at,updated_at")
     .single();
   if (error) throw error;
 
@@ -136,7 +137,7 @@ export const updateDeal = async (
     title: data.title,
     clientName: data.description ?? "Client",
     priority: data.priority === 3 ? "high" : data.priority === 2 ? "medium" : "low",
-    position: undefined,
+    position: data.position ?? undefined,
     nextFollowUpDate: null,
     reminderAt: payload.reminderAt ?? null,
     notes: payload.notes,
@@ -151,13 +152,15 @@ export const deleteDeal = async (id: string) => {
 export const updateDealPositions = async (
   updates: { id: string; columnId: string; position: number }[]
 ) => {
-  const { error } = await supabase.from("deals").upsert(
-    updates.map((u) => ({
-      id: u.id,
-      column_id: u.columnId,
-      position: u.position,
-    }))
+  const results = await Promise.all(
+    updates.map((u) =>
+      supabase
+        .from("deals")
+        .update({ column_id: u.columnId, position: u.position })
+        .eq("id", u.id)
+    )
   );
+  const error = results.find((r) => r.error)?.error;
   if (error) throw error;
 };
 
