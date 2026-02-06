@@ -10,6 +10,7 @@ interface SortableDealCardProps {
   onDelete?: (deal: Deal) => void;
   onOpenNotes?: (deal: Deal) => void;
   onOpenReminder?: (deal: Deal) => void;
+  onOpenActivity?: (deal: Deal) => void;
 }
 
 const SortableDealCard = ({
@@ -19,6 +20,7 @@ const SortableDealCard = ({
   onDelete,
   onOpenNotes,
   onOpenReminder,
+  onOpenActivity,
 }: SortableDealCardProps) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({
@@ -47,6 +49,7 @@ const SortableDealCard = ({
         onDelete={onDelete ? () => onDelete(deal) : undefined}
         onOpenNotes={onOpenNotes ? () => onOpenNotes(deal) : undefined}
         onOpenReminder={onOpenReminder ? () => onOpenReminder(deal) : undefined}
+        onOpenActivity={onOpenActivity ? () => onOpenActivity(deal) : undefined}
       />
     </div>
   );

@@ -27,14 +27,19 @@ const DealFormModal = ({
       nextFollowUpDate: null,
       reminderAt: null,
       notes: "",
+      amount: null,
+      currency: "EUR",
+      tags: [],
     }),
     []
   );
 
   const [form, setForm] = useState<Deal>(initialDeal ?? emptyDeal);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setForm(initialDeal ?? emptyDeal);
+    setError(null);
   }, [initialDeal, emptyDeal]);
 
   if (!isOpen) return null;
@@ -57,12 +62,32 @@ const DealFormModal = ({
       return;
     }
 
+    if (field === "amount") {
+      const numeric = value.trim().length > 0 ? Number(value) : null;
+      setForm((prev) => ({ ...prev, amount: Number.isNaN(numeric) ? null : numeric }));
+      return;
+    }
+    if (field === "tags") {
+      const nextTags = value
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean);
+      setForm((prev) => ({ ...prev, tags: nextTags }));
+      return;
+    }
+
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    onSave({ ...form });
+    const safeTitle = form.title.trim();
+    if (!safeTitle) {
+      setError("Le titre est obligatoire.");
+      return;
+    }
+    setError(null);
+    onSave({ ...form, title: safeTitle });
   };
 
   return (
@@ -90,6 +115,9 @@ const DealFormModal = ({
               required
               className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
             />
+            {error ? (
+              <p className="mt-2 text-xs text-rose-600">{error}</p>
+            ) : null}
           </div>
           <div>
             <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
@@ -127,6 +155,39 @@ const DealFormModal = ({
                 type="datetime-local"
                 value={form.reminderAt ?? ""}
                 onChange={(event) => handleChange("reminderAt", event.target.value)}
+                className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                Montant
+              </label>
+              <input
+                type="number"
+                value={form.amount ?? ""}
+                onChange={(event) => handleChange("amount", event.target.value)}
+                className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+              />
+            </div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                Devise
+              </label>
+              <input
+                value={form.currency ?? ""}
+                onChange={(event) => handleChange("currency", event.target.value)}
+                className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                Tags (séparés par des virgules)
+              </label>
+              <input
+                value={(form.tags ?? []).join(", ")}
+                onChange={(event) => handleChange("tags", event.target.value)}
                 className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
               />
             </div>

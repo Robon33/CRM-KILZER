@@ -18,6 +18,7 @@ interface DealCardProps {
   onDelete?: () => void;
   onOpenNotes?: () => void;
   onOpenReminder?: () => void;
+  onOpenActivity?: () => void;
 }
 
 const isOverdue = (isoDate: string | null) => {
@@ -35,7 +36,14 @@ const formatReminder = (value: string | null) => {
   return `${date} ${time}`;
 };
 
-const DealCard = ({ deal, onClick, onDelete, onOpenNotes, onOpenReminder }: DealCardProps) => {
+const DealCard = ({
+  deal,
+  onClick,
+  onDelete,
+  onOpenNotes,
+  onOpenReminder,
+  onOpenActivity,
+}: DealCardProps) => {
   const overdue = deal.reminderAt
     ? new Date(deal.reminderAt) < new Date()
     : isOverdue(deal.nextFollowUpDate);
@@ -86,9 +94,29 @@ const DealCard = ({ deal, onClick, onDelete, onOpenNotes, onOpenReminder }: Deal
           )}
         </div>
       </div>
+      {typeof deal.amount === "number" ? (
+        <div className="mt-3 text-xs text-slate-500">
+          Montant :{" "}
+          <span className="font-semibold text-slate-700">
+            {deal.amount.toLocaleString("fr-FR")} {deal.currency ?? "EUR"}
+          </span>
+        </div>
+      ) : null}
 
       {deal.notes ? (
         <p className="mt-3 text-sm text-slate-600 line-clamp-2">{deal.notes}</p>
+      ) : null}
+      {deal.tags && deal.tags.length > 0 ? (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {deal.tags.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-500"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
       ) : null}
       <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center gap-2 text-xs">
@@ -116,6 +144,19 @@ const DealCard = ({ deal, onClick, onDelete, onOpenNotes, onOpenReminder }: Deal
               className="rounded-full border border-slate-200 px-2 py-1 text-slate-500 hover:border-slate-300"
             >
               Rappels
+            </button>
+          ) : null}
+          {onOpenActivity ? (
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                onOpenActivity();
+              }}
+              onPointerDown={(event) => event.stopPropagation()}
+              className="rounded-full border border-slate-200 px-2 py-1 text-slate-500 hover:border-slate-300"
+            >
+              Activite
             </button>
           ) : null}
         </div>

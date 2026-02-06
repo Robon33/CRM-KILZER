@@ -28,6 +28,7 @@ interface KanbanBoardProps {
   onDeleteColumn?: (columnId: string) => void;
   onOpenNotes?: (deal: Deal) => void;
   onOpenReminder?: (deal: Deal) => void;
+  onOpenActivity?: (deal: Deal) => void;
 }
 
 const findColumnByDealId = (columns: KanbanColumnData[], dealId: string) => {
@@ -46,6 +47,7 @@ const KanbanBoard = ({
   onDeleteColumn,
   onOpenNotes,
   onOpenReminder,
+  onOpenActivity,
 }: KanbanBoardProps) => {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -165,6 +167,7 @@ const KanbanBoard = ({
                 onDeleteColumn={(columnId) => onDeleteColumn?.(columnId)}
                 onOpenNotes={(deal) => onOpenNotes?.(deal)}
                 onOpenReminder={(deal) => onOpenReminder?.(deal)}
+                onOpenActivity={(deal) => onOpenActivity?.(deal)}
               />
             ))}
         </div>

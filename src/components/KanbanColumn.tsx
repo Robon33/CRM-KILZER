@@ -13,6 +13,7 @@ interface KanbanColumnProps {
   onDeleteColumn: (columnId: string) => void;
   onOpenNotes: (deal: KanbanColumnData["deals"][number]) => void;
   onOpenReminder: (deal: KanbanColumnData["deals"][number]) => void;
+  onOpenActivity: (deal: KanbanColumnData["deals"][number]) => void;
 }
 
 const KanbanColumn = ({
@@ -25,6 +26,7 @@ const KanbanColumn = ({
   onDeleteColumn,
   onOpenNotes,
   onOpenReminder,
+  onOpenActivity,
 }: KanbanColumnProps) => {
   const { setNodeRef } = useDroppable({
     id: `column:${column.id}`,
@@ -86,6 +88,7 @@ const KanbanColumn = ({
                 onDelete={onDeleteDeal}
                 onOpenNotes={onOpenNotes}
                 onOpenReminder={onOpenReminder}
+                onOpenActivity={onOpenActivity}
               />
             ))
           )}

@@ -4,10 +4,16 @@ export type DateFilter = "all" | "overdue" | "today" | "upcoming" | "none";
 
 interface KanbanFiltersProps {
   query: string;
+  tagsQuery: string;
+  amountMin: string;
+  amountMax: string;
   priority: DealPriority | "all";
   dateFilter: DateFilter;
   compactMode: boolean;
   onQueryChange: (value: string) => void;
+  onTagsQueryChange: (value: string) => void;
+  onAmountMinChange: (value: string) => void;
+  onAmountMaxChange: (value: string) => void;
   onPriorityChange: (value: DealPriority | "all") => void;
   onDateFilterChange: (value: DateFilter) => void;
   onCompactModeChange: (value: boolean) => void;
@@ -16,10 +22,16 @@ interface KanbanFiltersProps {
 
 const KanbanFilters = ({
   query,
+  tagsQuery,
+  amountMin,
+  amountMax,
   priority,
   dateFilter,
   compactMode,
   onQueryChange,
+  onTagsQueryChange,
+  onAmountMinChange,
+  onAmountMaxChange,
   onPriorityChange,
   onDateFilterChange,
   onCompactModeChange,
@@ -36,6 +48,17 @@ const KanbanFilters = ({
             value={query}
             onChange={(event) => onQueryChange(event.target.value)}
             placeholder="Titre ou client"
+            className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition focus:border-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+          />
+        </div>
+        <div className="flex-1 min-w-[220px]">
+          <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+            Tags
+          </label>
+          <input
+            value={tagsQuery}
+            onChange={(event) => onTagsQueryChange(event.target.value)}
+            placeholder="ex: saas, urgent"
             className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition focus:border-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
           />
         </div>
@@ -69,6 +92,28 @@ const KanbanFilters = ({
             <option value="upcoming">A venir</option>
             <option value="none">Sans date</option>
           </select>
+        </div>
+        <div className="min-w-[150px]">
+          <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+            Min €
+          </label>
+          <input
+            type="number"
+            value={amountMin}
+            onChange={(event) => onAmountMinChange(event.target.value)}
+            className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+          />
+        </div>
+        <div className="min-w-[150px]">
+          <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+            Max €
+          </label>
+          <input
+            type="number"
+            value={amountMax}
+            onChange={(event) => onAmountMaxChange(event.target.value)}
+            className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+          />
         </div>
         <div className="flex items-end gap-2">
           <button

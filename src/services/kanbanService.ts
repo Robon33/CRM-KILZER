@@ -1,5 +1,5 @@
 import { supabase } from "../supabaseClient";
-import type { Column, Deal, Note, Reminder } from "../types/kanban";
+import type { ActivityEvent, Column, Deal, Note, Reminder } from "../types/kanban";
 
 // Columns
 export const fetchColumns = async (): Promise<Column[]> => {
@@ -62,7 +62,7 @@ export const deleteColumn = async (id: string) => {
 export const fetchDeals = async (): Promise<Deal[]> => {
   const { data, error } = await supabase
     .from("deals")
-    .select("id,column_id,title,description,priority,position,created_at,updated_at")
+    .select("id,column_id,title,description,priority,position,amount,currency,tags,created_at,updated_at")
     .order("position", { ascending: true });
   if (error) throw error;
 
@@ -73,6 +73,9 @@ export const fetchDeals = async (): Promise<Deal[]> => {
     clientName: row.description ?? "Client",
     priority: row.priority === 3 ? "high" : row.priority === 2 ? "medium" : "low",
     position: row.position ?? undefined,
+    amount: row.amount ?? null,
+    currency: row.currency ?? null,
+    tags: row.tags ?? [],
     nextFollowUpDate: null,
     reminderAt: null,
   }));
@@ -85,6 +88,9 @@ export const createDeal = async (payload: {
   priority: Deal["priority"];
   position: number;
   nextFollowUpDate: string | null;
+  amount?: number | null;
+  currency?: string | null;
+  tags?: string[];
 }): Promise<Deal> => {
   const safeTitle = (payload.title ?? "").trim() || "Nouveau deal";
   const safeClient = (payload.clientName ?? "").trim() || "Client";
@@ -95,8 +101,11 @@ export const createDeal = async (payload: {
       title: safeTitle,
       description: safeClient,
       priority: payload.priority === "high" ? 3 : payload.priority === "medium" ? 2 : 1,
+      amount: payload.amount ?? null,
+      currency: payload.currency ?? null,
+      tags: payload.tags ?? [],
     })
-    .select("id,column_id,title,description,priority,position,created_at,updated_at")
+    .select("id,column_id,title,description,priority,position,amount,currency,tags,created_at,updated_at")
     .single();
   if (error) throw error;
 
@@ -107,6 +116,9 @@ export const createDeal = async (payload: {
     clientName: data.description ?? "Client",
     priority: data.priority === 3 ? "high" : data.priority === 2 ? "medium" : "low",
     position: data.position ?? undefined,
+    amount: data.amount ?? null,
+    currency: data.currency ?? null,
+    tags: data.tags ?? [],
     nextFollowUpDate: null,
     reminderAt: null,
   };
@@ -125,9 +137,12 @@ export const updateDeal = async (
       priority:
         payload.priority === "high" ? 3 : payload.priority === "medium" ? 2 : 1,
       position: payload.position,
+      amount: payload.amount ?? null,
+      currency: payload.currency ?? null,
+      tags: payload.tags ?? [],
     })
     .eq("id", id)
-    .select("id,column_id,title,description,priority,position,created_at,updated_at")
+    .select("id,column_id,title,description,priority,position,amount,currency,tags,created_at,updated_at")
     .single();
   if (error) throw error;
 
@@ -138,6 +153,9 @@ export const updateDeal = async (
     clientName: data.description ?? "Client",
     priority: data.priority === 3 ? "high" : data.priority === 2 ? "medium" : "low",
     position: data.position ?? undefined,
+    amount: data.amount ?? null,
+    currency: data.currency ?? null,
+    tags: data.tags ?? [],
     nextFollowUpDate: null,
     reminderAt: payload.reminderAt ?? null,
     notes: payload.notes,
@@ -275,5 +293,38 @@ export const upsertReminderForDeal = async (
   const { error } = await supabase
     .from("reminders")
     .upsert({ deal_id: dealId, remind_at: remindAt }, { onConflict: "deal_id" });
+  if (error) throw error;
+};
+
+// Activity events
+export const fetchActivityEvents = async (): Promise<ActivityEvent[]> => {
+  const { data, error } = await supabase
+    .from("activity_events")
+    .select("id,type,deal_id,column_id,payload,created_at")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    type: row.type,
+    dealId: row.deal_id ?? null,
+    columnId: row.column_id ?? null,
+    payload: row.payload ?? null,
+    createdAt: row.created_at ?? null,
+  }));
+};
+
+export const createActivityEvent = async (event: {
+  type: string;
+  dealId?: string | null;
+  columnId?: string | null;
+  payload?: string | null;
+}) => {
+  const { error } = await supabase.from("activity_events").insert({
+    type: event.type,
+    deal_id: event.dealId ?? null,
+    column_id: event.columnId ?? null,
+    payload: event.payload ?? null,
+  });
   if (error) throw error;
 };

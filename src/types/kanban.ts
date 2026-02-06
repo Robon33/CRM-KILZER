@@ -15,6 +15,9 @@ export interface Deal {
   nextFollowUpDate: string | null;
   reminderAt: string | null;
   notes?: string;
+  amount?: number | null;
+  currency?: string | null;
+  tags?: string[];
   columnId?: string;
   position?: number;
 }
@@ -36,4 +39,13 @@ export interface Reminder {
   id: string;
   dealId: string;
   remindAt: string;
+}
+
+export interface ActivityEvent {
+  id: string;
+  type: string;
+  dealId?: string | null;
+  columnId?: string | null;
+  payload?: string | null;
+  createdAt?: string | null;
 }

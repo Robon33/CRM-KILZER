@@ -5,6 +5,8 @@ import DealFormModal from "../components/DealFormModal";
 import ColumnFormModal from "../components/ColumnFormModal";
 import NotesModal from "../components/NotesModal";
 import ReminderModal from "../components/ReminderModal";
+import ActivityModal from "../components/ActivityModal";
+import KpiDashboard from "../components/KpiDashboard";
 import type { Deal, DealPriority, KanbanColumnData } from "../types/kanban";
 import { useKanban } from "../hooks/useKanban";
 
@@ -27,6 +29,7 @@ const KanbanPage = () => {
     deals,
     notes,
     reminders,
+    activityEvents,
     loading,
     error,
     refresh,
@@ -46,6 +49,9 @@ const KanbanPage = () => {
   } = useKanban();
 
   const [query, setQuery] = useState("");
+  const [tagsQuery, setTagsQuery] = useState("");
+  const [amountMin, setAmountMin] = useState("");
+  const [amountMax, setAmountMax] = useState("");
   const [priority, setPriority] = useState<DealPriority | "all">("all");
   const [dateFilter, setDateFilter] = useState<DateFilter>("all");
   const [compactMode, setCompactMode] = useState(false);
@@ -63,6 +69,7 @@ const KanbanPage = () => {
   const [activeDealId, setActiveDealId] = useState<string | null>(null);
   const [notesOpen, setNotesOpen] = useState(false);
   const [reminderOpen, setReminderOpen] = useState(false);
+  const [activityOpen, setActivityOpen] = useState(false);
 
   const activeDeal = useMemo(
     () => deals.find((deal) => deal.id === activeDealId) ?? null,
@@ -108,15 +115,81 @@ const KanbanPage = () => {
       deal.title.toLowerCase().includes(queryLower) ||
       deal.clientName.toLowerCase().includes(queryLower);
     const matchesPriority = priority === "all" || deal.priority === priority;
+    const tagsFilter = tagsQuery
+      .split(",")
+      .map((tag) => tag.trim().toLowerCase())
+      .filter(Boolean);
+    const dealTags = (deal.tags ?? []).map((tag) => tag.toLowerCase());
+    const matchesTags =
+      tagsFilter.length === 0 ||
+      tagsFilter.some((tag) => dealTags.includes(tag));
+    const minValue = amountMin.trim() ? Number(amountMin) : null;
+    const maxValue = amountMax.trim() ? Number(amountMax) : null;
+    const amount = typeof deal.amount === "number" ? deal.amount : null;
+    const matchesAmount =
+      (minValue === null || (amount !== null && amount >= minValue)) &&
+      (maxValue === null || (amount !== null && amount <= maxValue));
 
-    return matchesQuery && matchesPriority && matchesDateFilter(deal);
+    return matchesQuery && matchesPriority && matchesDateFilter(deal) && matchesTags && matchesAmount;
   };
 
   const resetFilters = () => {
     setQuery("");
+    setTagsQuery("");
+    setAmountMin("");
+    setAmountMax("");
     setPriority("all");
     setDateFilter("all");
     setCompactMode(false);
+  };
+  const handleExportCsv = () => {
+    const columnTitleById = new Map(columns.map((col) => [col.id, col.title]));
+    const rows = deals.filter(matchesDeal).map((deal) => ({
+      title: deal.title,
+      clientName: deal.clientName,
+      priority: deal.priority,
+      amount: deal.amount ?? "",
+      currency: deal.currency ?? "",
+      reminderAt: deal.reminderAt ?? "",
+      notes: deal.notes ?? "",
+      tags: (deal.tags ?? []).join("|"),
+      column: deal.columnId ? columnTitleById.get(deal.columnId) ?? "" : "",
+    }));
+
+    const header = [
+      "title",
+      "clientName",
+      "priority",
+      "amount",
+      "currency",
+      "reminderAt",
+      "notes",
+      "tags",
+      "column",
+    ];
+
+    const escapeCell = (value: string | number) => {
+      const str = String(value ?? "");
+      if (str.includes(",") || str.includes("\"") || str.includes("\n")) {
+        return `"${str.replace(/\"/g, "\"\"")}"`;
+      }
+      return str;
+    };
+
+    const csv = [
+      header.join(","),
+      ...rows.map((row) =>
+        header.map((key) => escapeCell((row as Record<string, string | number>)[key] ?? "")).join(",")
+      ),
+    ].join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "kanban-deals.csv";
+    link.click();
+    URL.revokeObjectURL(url);
   };
 
   const openCreateModal = (columnId: string) => {
@@ -221,26 +294,43 @@ const KanbanPage = () => {
             Pipeline commercial synchronise avec Supabase.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={openCreateColumn}
-          className="rounded-full border border-slate-200 px-3 py-2 text-xs text-slate-600 transition hover:border-slate-300"
-        >
-          + Ajouter une colonne
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleExportCsv}
+            className="rounded-full border border-slate-200 px-3 py-2 text-xs text-slate-600 transition hover:border-slate-300"
+          >
+            Export CSV
+          </button>
+          <button
+            type="button"
+            onClick={openCreateColumn}
+            className="rounded-full border border-slate-200 px-3 py-2 text-xs text-slate-600 transition hover:border-slate-300"
+          >
+            + Ajouter une colonne
+          </button>
+        </div>
       </div>
 
       <KanbanFilters
         query={query}
+        tagsQuery={tagsQuery}
+        amountMin={amountMin}
+        amountMax={amountMax}
         priority={priority}
         dateFilter={dateFilter}
         compactMode={compactMode}
         onQueryChange={setQuery}
+        onTagsQueryChange={setTagsQuery}
+        onAmountMinChange={setAmountMin}
+        onAmountMaxChange={setAmountMax}
         onPriorityChange={setPriority}
         onDateFilterChange={setDateFilter}
         onCompactModeChange={setCompactMode}
         onReset={resetFilters}
       />
+
+      <KpiDashboard columns={columns} deals={deals} />
 
       <KanbanBoard
         columns={columnsForBoard}
@@ -261,6 +351,10 @@ const KanbanPage = () => {
         onOpenReminder={(deal) => {
           setActiveDealId(deal.id);
           setReminderOpen(true);
+        }}
+        onOpenActivity={(deal) => {
+          setActiveDealId(deal.id);
+          setActivityOpen(true);
         }}
       />
 
@@ -314,6 +408,16 @@ const KanbanPage = () => {
         }}
         onUpdate={(id, remindAt) => void editReminder(id, remindAt)}
         onDelete={(id) => void removeReminder(id)}
+      />
+
+      <ActivityModal
+        isOpen={activityOpen}
+        deal={activeDeal}
+        events={activityEvents}
+        onClose={() => {
+          setActivityOpen(false);
+          setActiveDealId(null);
+        }}
       />
     </div>
   );

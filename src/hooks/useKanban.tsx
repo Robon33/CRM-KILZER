@@ -5,6 +5,8 @@ import {
   fetchDeals,
   fetchNotes,
   fetchReminders,
+  fetchActivityEvents,
+  createActivityEvent,
   createColumn,
   updateColumn,
   deleteColumn,
@@ -20,12 +22,14 @@ import {
   deleteReminder,
   upsertReminderForDeal,
 } from "../services/kanbanService";
+import type { ActivityEvent } from "../types/kanban";
 
 interface KanbanState {
   columns: Column[];
   deals: Deal[];
   notes: Note[];
   reminders: Reminder[];
+  activityEvents: ActivityEvent[];
   loading: boolean;
   error: string | null;
   refresh: () => Promise<void>;
@@ -80,6 +84,27 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
   const [deals, setDeals] = useState<Deal[]>(cache.deals);
   const [notes, setNotes] = useState<Note[]>(cache.notes);
   const [reminders, setReminders] = useState<Reminder[]>(cache.reminders);
+  const [activityEvents, setActivityEvents] = useState<ActivityEvent[]>([]);
+
+  const fireEvent = (event: {
+    type: string;
+    dealId?: string | null;
+    columnId?: string | null;
+    payload?: string | null;
+  }) => {
+    void createActivityEvent(event).catch(() => {});
+    setActivityEvents((current) => [
+      {
+        id: `temp-${Date.now()}`,
+        type: event.type,
+        dealId: event.dealId ?? null,
+        columnId: event.columnId ?? null,
+        payload: event.payload ?? null,
+        createdAt: new Date().toISOString(),
+      },
+      ...current,
+    ]);
+  };
   const [loading, setLoading] = useState<boolean>(!cache.hydrated);
   const [error, setError] = useState<string | null>(null);
 
@@ -110,7 +135,14 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
         fetchNotes(),
         fetchReminders(),
       ]);
+      let events: ActivityEvent[] = [];
+      try {
+        events = await fetchActivityEvents();
+      } catch {
+        events = [];
+      }
       hydrate({ columns: cols, deals: ds, notes: ns, reminders: rs });
+      setActivityEvents(events);
     } catch (err: any) {
       setError(err.message ?? "Erreur de chargement");
     } finally {
@@ -138,6 +170,11 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
       setColumns((current) =>
         current.map((col) => (col.id === optimistic.id ? created : col))
       );
+      fireEvent({
+        type: "column_created",
+        columnId: created.id,
+        payload: created.title,
+      });
     } catch (err: any) {
       setColumns(prev);
       setError(err.message ?? "Erreur lors de la creation");
@@ -150,6 +187,11 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       await updateColumn(id, { title });
+      fireEvent({
+        type: "column_updated",
+        columnId: id,
+        payload: title,
+      });
     } catch (err: any) {
       setColumns(prev);
       setError(err.message ?? "Erreur lors de la mise a jour");
@@ -164,6 +206,10 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       await deleteColumn(id);
+      fireEvent({
+        type: "column_deleted",
+        columnId: id,
+      });
     } catch (err: any) {
       setColumns(prevColumns);
       setDeals(prevDeals);
@@ -186,6 +232,9 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
       nextFollowUpDate: draft?.nextFollowUpDate ?? null,
       reminderAt: draft?.reminderAt ?? null,
       notes: draft?.notes,
+      amount: draft?.amount ?? null,
+      currency: draft?.currency ?? "EUR",
+      tags: draft?.tags ?? [],
     };
     setDeals([...prev, optimistic]);
 
@@ -197,6 +246,9 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
         priority: optimistic.priority,
         position: optimistic.position ?? 1,
         nextFollowUpDate: optimistic.nextFollowUpDate,
+        amount: optimistic.amount ?? null,
+        currency: optimistic.currency ?? null,
+        tags: optimistic.tags ?? [],
       });
       if (optimistic.notes) {
         const note = await createNote(created.id, optimistic.notes);
@@ -209,6 +261,12 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
       setDeals((current) =>
         current.map((deal) => (deal.id === tempId ? created : deal))
       );
+      fireEvent({
+        type: "deal_created",
+        dealId: created.id,
+        columnId,
+        payload: created.title,
+      });
     } catch (err: any) {
       setDeals(prev);
       setError(err.message ?? "Erreur lors de la creation du deal");
@@ -238,6 +296,12 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
       ]);
       setNotes(nextNotes);
       setReminders(nextReminders);
+      fireEvent({
+        type: "deal_updated",
+        dealId: deal.id,
+        columnId: deal.columnId ?? null,
+        payload: deal.title,
+      });
     } catch (err: any) {
       setDeals(prev);
       setError(err.message ?? "Erreur lors de la mise a jour du deal");
@@ -250,6 +314,7 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       await deleteDeal(id);
+      fireEvent({ type: "deal_deleted", dealId: id });
     } catch (err: any) {
       setDeals(prev);
       setError(err.message ?? "Erreur lors de la suppression du deal");
@@ -273,6 +338,11 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
           position: index + 1,
         }))
       );
+      fireEvent({
+        type: "deal_moved",
+        columnId,
+        payload: orderedIds.join(","),
+      });
     } catch (err: any) {
       setDeals(prev);
       setError(err.message ?? "Erreur lors du reorder");
@@ -289,6 +359,11 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
       setNotes((current) =>
         current.map((n) => (n.id === temp.id ? created : n))
       );
+      fireEvent({
+        type: "note_created",
+        dealId,
+        payload: body,
+      });
     } catch (err: any) {
       setNotes(prev);
       setError(err.message ?? "Erreur note");
@@ -301,6 +376,7 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       await updateNote(id, body);
+      fireEvent({ type: "note_updated", payload: body });
     } catch (err: any) {
       setNotes(prev);
       setError(err.message ?? "Erreur note");
@@ -313,6 +389,7 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       await deleteNote(id);
+      fireEvent({ type: "note_deleted" });
     } catch (err: any) {
       setNotes(prev);
       setError(err.message ?? "Erreur note");
@@ -329,6 +406,11 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
       setReminders((current) =>
         current.map((r) => (r.id === temp.id ? created : r))
       );
+      fireEvent({
+        type: "reminder_created",
+        dealId,
+        payload: remindAt,
+      });
     } catch (err: any) {
       setReminders(prev);
       setError(err.message ?? "Erreur rappel");
@@ -343,6 +425,7 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       await updateReminder(id, remindAt);
+      fireEvent({ type: "reminder_updated", payload: remindAt });
     } catch (err: any) {
       setReminders(prev);
       setError(err.message ?? "Erreur rappel");
@@ -355,6 +438,7 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       await deleteReminder(id);
+      fireEvent({ type: "reminder_deleted" });
     } catch (err: any) {
       setReminders(prev);
       setError(err.message ?? "Erreur rappel");
@@ -367,6 +451,7 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
       deals: mergeNotesAndReminders(deals, notes, reminders),
       notes,
       reminders,
+      activityEvents,
       loading,
       error,
       refresh,
@@ -389,6 +474,7 @@ export const KanbanProvider = ({ children }: { children: React.ReactNode }) => {
       deals,
       notes,
       reminders,
+      activityEvents,
       loading,
       error,
     ]
